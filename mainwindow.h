@@ -2,10 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QLabel>
 #include <QScrollArea>
 
-#include "imagesizelabel.h"
+#include "pyramid.h"
+#include "maintoolbar.h"
 
 class MainWindow : public QMainWindow
 {
@@ -13,21 +13,23 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
-    ~MainWindow();
 
 private slots:
     void openFile();
+    void changeLayer(int layerId);
 
 private:
-    QImage image;
+    Pyramid pyramid;
 
-    ImageSizeLabel *imageSizeLabel;
+    MainToolbar *mainToolbar;
     QLabel *imageLabel;
     QScrollArea *scrollArea;
 
+    const static double windowSizeCoeff;
 
     void initializeMenu();
     void initializeToolBar();
+
 };
 
 #endif // MAINWINDOW_H

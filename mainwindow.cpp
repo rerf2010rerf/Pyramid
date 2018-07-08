@@ -2,11 +2,12 @@
 
 #include "mainwindow.h"
 
+const double MainWindow::windowSizeCoeff = 0.5;
 
 MainWindow::MainWindow() :
-    scrollArea(new QScrollArea()),
+    mainToolbar(new MainToolbar()),
     imageLabel(new QLabel()),
-    imageSizeLabel(new ImageSizeLabel())
+    scrollArea(new QScrollArea())
 {
     setWindowTitle("Pyramid");
 
@@ -14,38 +15,42 @@ MainWindow::MainWindow() :
     setCentralWidget(scrollArea);
 
     initializeMenu();
-    initializeToolBar();
+    addToolBar(mainToolbar);
+    connect(mainToolbar, QOverload<int>::of(&MainToolbar::layerChanged), this, &MainWindow::changeLayer);
 
-    resize(QGuiApplication::primaryScreen()->availableSize() * 1 / 2);
+    resize(QGuiApplication::primaryScreen()->availableSize() * windowSizeCoeff);
 }
 
 void MainWindow::initializeMenu() {
     QMenu *fileMenu = menuBar()->addMenu("File");
     fileMenu->addAction("Open", this, &MainWindow::openFile);
-
 }
 
-void MainWindow::initializeToolBar() {
-    QToolBar *mainToolBar = addToolBar("mainToolBar");
-    mainToolBar->addWidget(imageSizeLabel);
-}
 
 void MainWindow::openFile() {
     const QString fileName = QFileDialog::getOpenFileName(this,
                                                           "Choose file",
                                                           QString(),
-                                                          "Images (*.png *.jpg *.jpeg);;All files (*.*");
+                                                          "Images (*.png *.jpg *.jpeg);;All files (*.*)");
+
     if (fileName.isNull()) {
         return;
     }
-    const QImage newImage(fileName);
-    if (newImage.isNull()) {
+    try {
+        pyramid.openImage(fileName);
+    } catch (PyramidException) {
         QMessageBox::information(this, "error", "Error image loading");
-    } else {
-        image = newImage;
-        imageLabel->setPixmap(QPixmap::fromImage(image));
-        imageLabel->adjustSize();
-        imageSizeLabel->setImageSize(image.width(), image.height());
+        return;
     }
 
+    mainToolbar->updateForPyramid(pyramid);
+    changeLayer(Pyramid::originImageLayer);
 }
+
+void MainWindow::changeLayer(int layerId) {
+    const QImage &layer = pyramid.getLayer(layerId);
+    imageLabel->setPixmap(QPixmap::fromImage(layer).scaled(pyramid.getOriginSize()));
+    imageLabel->adjustSize();
+
+}
+
