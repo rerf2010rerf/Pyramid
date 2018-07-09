@@ -25,16 +25,14 @@ Q_DECLARE_METATYPE(ImageItem)
 class ImagesManager
 {
 public:
-    ImagesManager();
-
     ImageItem openNewImage(const QString &fileName);
-    const Pyramid &changeActivePyramid(const ImageItem &imageItem);
-    const Pyramid &getActivePyramid();
+    Pyramid &changeActivePyramid(const ImageItem &imageItem);
+    Pyramid &getActivePyramid();
 
 
 private:
     QVector<Pyramid> pyramides;
-    int activePyramid;
+    int activePyramid = 0;
 };
 
 #endif // IMAGESMANAGER_H

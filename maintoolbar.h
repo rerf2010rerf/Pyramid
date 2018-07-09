@@ -53,7 +53,7 @@ class LayerComboBox : public QComboBox
 
 public:
     LayerComboBox();
-    void update(const Pyramid &pyramid);
+    void update(Pyramid &pyramid);
 
 signals:
     void layerChanged(int index);
@@ -68,7 +68,7 @@ class MainToolbar : public QToolBar
 
 public:
     MainToolbar();
-    void updateForPyramid(const Pyramid &pyramid);
+    void updateForPyramid(Pyramid &pyramid);
     void addNewImageItem(const ImageItem &imageItem);
 
 signals:

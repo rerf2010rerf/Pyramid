@@ -1,9 +1,5 @@
 #include "imagesmanager.h"
 
-ImagesManager::ImagesManager()
-{
-
-}
 
 ImageItem ImagesManager::openNewImage(const QString &fileName)
 {
@@ -17,15 +13,15 @@ ImageItem ImagesManager::openNewImage(const QString &fileName)
     return ImageItem(fileName, newPyramid.getOriginSize(), pyramides.size() - 1);
 }
 
-const Pyramid &ImagesManager::changeActivePyramid(const ImageItem &imageItem)
+Pyramid &ImagesManager::changeActivePyramid(const ImageItem &imageItem)
 {
     activePyramid = imageItem.getIndex();
-    return pyramides.at(activePyramid);
+    return pyramides[activePyramid];
 }
 
-const Pyramid &ImagesManager::getActivePyramid()
+Pyramid &ImagesManager::getActivePyramid()
 {
-    return pyramides.at(activePyramid);
+    return pyramides[activePyramid];
 }
 
 ImageItem::ImageItem() : ImageItem(QString(""), QSize(), -1) {}

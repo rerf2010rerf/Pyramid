@@ -15,7 +15,7 @@ MainToolbar::MainToolbar() :
 
 }
 
-void MainToolbar::updateForPyramid(const Pyramid &pyramid)
+void MainToolbar::updateForPyramid(Pyramid &pyramid)
 {
     imageSizeLabel->setImageSize(pyramid.getOriginSize());
     layerBox->update(pyramid);
@@ -44,10 +44,10 @@ LayerComboBox::LayerComboBox()
     connect(this, QOverload<int>::of(&QComboBox::activated), this, &LayerComboBox::qComboBoxActivate);
 }
 
-void LayerComboBox::update(const Pyramid &pyramid) {
+void LayerComboBox::update(Pyramid &pyramid) {
     clear();
     for (int i = 0; i < pyramid.size(); ++i) {
-        QSize size = pyramid.getLayer(i).size();
+        QSize size = pyramid.getLayerSize(i);
         addItem(
             QString("Layer %1: %2*%3").arg(i).arg(size.width()).arg(size.height()),
             QVariant(i)

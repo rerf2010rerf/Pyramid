@@ -3,6 +3,7 @@
 
 #include <QImage>
 #include <QVector>
+#include <QMap>
 #include <exception>
 
 class Pyramid
@@ -10,13 +11,14 @@ class Pyramid
 public:
     void openImage(const QString &fileName);
     int size() const;
-    const QImage &getLayer(int id) const;
+    const QImage &getLayer(int id);
     QSize getOriginSize() const;
+    QSize getLayerSize(int layerId) const;
     const static int originImageLayer;
 
 private:
-    QVector<QImage> layers;
-
+    QMap<int, QImage> layers;
+    int pyramidSize;
 };
 
 class PyramidException : public std::logic_error {
