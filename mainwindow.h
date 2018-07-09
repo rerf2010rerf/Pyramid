@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QScrollArea>
 
-#include "pyramid.h"
+#include "imagesmanager.h"
 #include "maintoolbar.h"
 
 class MainWindow : public QMainWindow
@@ -17,9 +17,10 @@ public:
 private slots:
     void openFile();
     void changeLayer(int layerId);
+    void changeImage(const ImageItem &imageItem);
 
 private:
-    Pyramid pyramid;
+    ImagesManager imagesManager;
 
     MainToolbar *mainToolbar;
     QLabel *imageLabel;

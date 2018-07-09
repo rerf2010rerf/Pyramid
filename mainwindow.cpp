@@ -17,6 +17,7 @@ MainWindow::MainWindow() :
     initializeMenu();
     addToolBar(mainToolbar);
     connect(mainToolbar, QOverload<int>::of(&MainToolbar::layerChanged), this, &MainWindow::changeLayer);
+    connect(mainToolbar, QOverload<const ImageItem &>::of(&MainToolbar::imageChanged), this, &MainWindow::changeImage);
 
     resize(QGuiApplication::primaryScreen()->availableSize() * windowSizeCoeff);
 }
@@ -37,20 +38,26 @@ void MainWindow::openFile() {
         return;
     }
     try {
-        pyramid.openImage(fileName);
+        ImageItem image = imagesManager.openNewImage(fileName);
+        mainToolbar->addNewImageItem(image);
+        mainToolbar->updateForPyramid(imagesManager.changeActivePyramid(image));
+        changeLayer(Pyramid::originImageLayer);
     } catch (PyramidException) {
         QMessageBox::information(this, "error", "Error image loading");
         return;
     }
-
-    mainToolbar->updateForPyramid(pyramid);
-    changeLayer(Pyramid::originImageLayer);
 }
 
 void MainWindow::changeLayer(int layerId) {
-    const QImage &layer = pyramid.getLayer(layerId);
-    imageLabel->setPixmap(QPixmap::fromImage(layer).scaled(pyramid.getOriginSize()));
+    const QImage &layer = imagesManager.getActivePyramid().getLayer(layerId);
+    imageLabel->setPixmap(QPixmap::fromImage(layer).scaled(imagesManager.getActivePyramid().getOriginSize()));
     imageLabel->adjustSize();
 
+}
+
+void MainWindow::changeImage(const ImageItem &imageItem)
+{
+    mainToolbar->updateForPyramid(imagesManager.changeActivePyramid(imageItem));
+    changeLayer(Pyramid::originImageLayer);
 }
 

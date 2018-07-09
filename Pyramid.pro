@@ -27,9 +27,11 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     pyramid.cpp \
-    maintoolbar.cpp
+    maintoolbar.cpp \
+    imagesmanager.cpp
 
 HEADERS += \
         mainwindow.h \
     pyramid.h \
-    maintoolbar.h
+    maintoolbar.h \
+    imagesmanager.h

@@ -1,11 +1,14 @@
 #include "maintoolbar.h"
 
-
+#include <algorithm>
 
 MainToolbar::MainToolbar() :
+    imageBox(new FileComboBox()),
     layerBox(new LayerComboBox()),
     imageSizeLabel(new ImageSizeLabel())
 {
+    addWidget(imageBox);
+    connect(imageBox, QOverload<const ImageItem &>::of(&FileComboBox::fileChanged), this, &MainToolbar::imageComboBoxChanged);
     addWidget(layerBox);
     connect(layerBox, QOverload<int>::of(&LayerComboBox::layerChanged), this, &MainToolbar::layerComboBoxChanged);
     addWidget(imageSizeLabel);
@@ -18,9 +21,19 @@ void MainToolbar::updateForPyramid(const Pyramid &pyramid)
     layerBox->update(pyramid);
 }
 
+void MainToolbar::addNewImageItem(const ImageItem &imageItem)
+{
+    imageBox->addImageFile(imageItem);
+}
+
 void MainToolbar::layerComboBoxChanged(int index)
 {
     emit layerChanged(index);
+}
+
+void MainToolbar::imageComboBoxChanged(const ImageItem &imageItem)
+{
+    emit imageChanged(imageItem);
 }
 
 
@@ -49,4 +62,62 @@ void LayerComboBox::qComboBoxActivate(int id)
 
 void ImageSizeLabel::setImageSize(const QSize &size) {
     setText(QString("Original image size: %1*%2").arg(size.width()).arg(size.height()));
+}
+
+FileComboBox::FileComboBox() : model(new FileListModel())
+{
+    setModel(model);
+    setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToContents);
+    connect(this, QOverload<int>::of(&QComboBox::activated), this, &FileComboBox::qComboBoxActivate);
+}
+
+void FileComboBox::addImageFile(const ImageItem &imageItem)
+{
+    setCurrentIndex(model->addImage(imageItem));
+}
+
+void FileComboBox::qComboBoxActivate(int id)
+{
+    emit fileChanged(itemData(id).value<ImageItem>());
+}
+
+
+
+FileListModel::FileListModel(QObject *parent) :
+    QAbstractListModel(parent) {
+}
+
+int FileListModel::rowCount(const QModelIndex &) const
+{
+    return items.size();
+}
+
+QVariant FileListModel::data(const QModelIndex &index, int role) const
+{
+    if (role == Qt::DisplayRole) {
+        return QVariant(items.at(index.row()).value<ImageItem>().getFileName());
+    } else if (role == Qt::UserRole) {
+       return items.at(index.row());
+    } else {
+        return QVariant();
+    }
+
+}
+
+int FileListModel::addImage(const ImageItem &imageItem)
+{
+    auto comparator = [](const QVariant &first, const QVariant &second) -> bool {
+        QSize firstSize = first.value<ImageItem>().getImageSize();
+        QSize secondSize = second.value<ImageItem>().getImageSize();
+        double thisDiag = qSqrt(qPow(firstSize.width(), 2) + qPow(firstSize.height(), 2));
+        double otherDiag = qSqrt(qPow(secondSize.width(), 2) + qPow(secondSize.height(), 2));
+        return thisDiag < otherDiag;
+    };
+
+    auto positionIter = std::lower_bound(items.cbegin(), items.cend(), QVariant::fromValue(imageItem), comparator);
+    int position = positionIter - items.cbegin();
+    beginInsertRows(QModelIndex(), position, position);
+    items.insert(position, QVariant::fromValue(imageItem));
+    endInsertRows();
+    return position;
 }
