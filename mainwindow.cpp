@@ -16,6 +16,7 @@ MainWindow::MainWindow() :
 
     initializeMenu();
     addToolBar(mainToolbar);
+    mainToolbar->setVisible(false);
     connect(mainToolbar, QOverload<int>::of(&MainToolbar::layerChanged), this, &MainWindow::changeLayer);
     connect(mainToolbar, QOverload<const ImageItem &>::of(&MainToolbar::imageChanged), this, &MainWindow::changeImage);
     connect(mainToolbar, QOverload<double>::of(&MainToolbar::pyramidStepChanged), this, &MainWindow::changeStep);
@@ -43,6 +44,7 @@ void MainWindow::openFile() {
         mainToolbar->addNewImageItem(image);
         mainToolbar->updateForPyramid(imagesManager.changeActivePyramid(image));
         changeLayer(Pyramid::originImageLayer);
+        mainToolbar->setVisible(true);
     } catch (PyramidException) {
         QMessageBox::information(this, "error", "Error image loading");
         return;

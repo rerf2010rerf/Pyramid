@@ -1,6 +1,7 @@
 #include "maintoolbar.h"
 
 #include <QPushButton>
+#include <QSplitter>
 
 #include <algorithm>
 
@@ -11,18 +12,24 @@ MainToolbar::MainToolbar() :
     stepSpinBox(new QDoubleSpinBox())
 {
     addWidget(imageBox);
+    addSeparator();
     connect(imageBox, QOverload<const ImageItem &>::of(&FileComboBox::fileChanged), this, &MainToolbar::imageComboBoxChanged);
 
     addWidget(layerBox);
+    addSeparator();
 
     connect(layerBox, QOverload<int>::of(&LayerComboBox::layerChanged), this, &MainToolbar::layerComboBoxChanged);
     addWidget(imageSizeLabel);
+    addSeparator();
+
+    addWidget(new QLabel("Pyramid step: "));
+    addSeparator();
 
     stepSpinBox->setMinimum(Pyramid::minimumStep);
     stepSpinBox->setMaximum(Pyramid::maximumStep);
     stepSpinBox->setSingleStep(0.1);
-    addWidget(new QLabel("Pyramid step: "));
     addWidget(stepSpinBox);
+    addSeparator();
 
     QPushButton *updateStepButton = new QPushButton("update step");
     connect(updateStepButton, &QPushButton::clicked, this, &MainToolbar::updateStepClicked);
@@ -101,11 +108,6 @@ void FileComboBox::qComboBoxActivate(int id)
     emit fileChanged(itemData(id).value<ImageItem>());
 }
 
-
-
-FileListModel::FileListModel(QObject *parent) :
-    QAbstractListModel(parent) {
-}
 
 int FileListModel::rowCount(const QModelIndex &) const
 {
