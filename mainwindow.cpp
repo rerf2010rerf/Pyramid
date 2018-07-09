@@ -18,6 +18,7 @@ MainWindow::MainWindow() :
     addToolBar(mainToolbar);
     connect(mainToolbar, QOverload<int>::of(&MainToolbar::layerChanged), this, &MainWindow::changeLayer);
     connect(mainToolbar, QOverload<const ImageItem &>::of(&MainToolbar::imageChanged), this, &MainWindow::changeImage);
+    connect(mainToolbar, QOverload<double>::of(&MainToolbar::pyramidStepChanged), this, &MainWindow::changeStep);
 
     resize(QGuiApplication::primaryScreen()->availableSize() * windowSizeCoeff);
 }
@@ -60,4 +61,12 @@ void MainWindow::changeImage(const ImageItem &imageItem)
     mainToolbar->updateForPyramid(imagesManager.changeActivePyramid(imageItem));
     changeLayer(Pyramid::originImageLayer);
 }
+
+void MainWindow::changeStep(double newStep)
+{
+    mainToolbar->updateForPyramid(imagesManager.changeActivePyramidStep(newStep));
+    changeLayer(Pyramid::originImageLayer);
+}
+
+
 

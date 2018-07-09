@@ -4,6 +4,7 @@
 #include <QToolBar>
 #include <QComboBox>
 #include <QLabel>
+#include <QDoubleSpinBox>
 
 #include "pyramid.h"
 #include "imagesmanager.h"
@@ -74,15 +75,18 @@ public:
 signals:
     void layerChanged(int index);
     void imageChanged(const ImageItem &imageItem);
+    void pyramidStepChanged(double newStep);
 
 private:
     FileComboBox *imageBox;
     LayerComboBox *layerBox;
     ImageSizeLabel *imageSizeLabel;
+    QDoubleSpinBox *stepSpinBox;
 
 private slots:
     void layerComboBoxChanged(int index);
     void imageComboBoxChanged(const ImageItem &imageItem);
+    void updateStepClicked();
 
 };
 

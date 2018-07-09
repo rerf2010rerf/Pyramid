@@ -24,6 +24,12 @@ Pyramid &ImagesManager::getActivePyramid()
     return pyramides[activePyramid];
 }
 
+Pyramid &ImagesManager::changeActivePyramidStep(double newStep)
+{
+    getActivePyramid().rebuildForStep(newStep);
+    return getActivePyramid();
+}
+
 ImageItem::ImageItem() : ImageItem(QString(""), QSize(), -1) {}
 
 ImageItem::ImageItem(const QString &fileName, const QSize &imageSize, int index) :

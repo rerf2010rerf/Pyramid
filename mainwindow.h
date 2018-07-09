@@ -18,6 +18,7 @@ private slots:
     void openFile();
     void changeLayer(int layerId);
     void changeImage(const ImageItem &imageItem);
+    void changeStep(double newStep);
 
 private:
     ImagesManager imagesManager;

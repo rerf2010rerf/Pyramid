@@ -1,23 +1,38 @@
 #include "maintoolbar.h"
 
+#include <QPushButton>
+
 #include <algorithm>
 
 MainToolbar::MainToolbar() :
     imageBox(new FileComboBox()),
     layerBox(new LayerComboBox()),
-    imageSizeLabel(new ImageSizeLabel())
+    imageSizeLabel(new ImageSizeLabel()),
+    stepSpinBox(new QDoubleSpinBox())
 {
     addWidget(imageBox);
     connect(imageBox, QOverload<const ImageItem &>::of(&FileComboBox::fileChanged), this, &MainToolbar::imageComboBoxChanged);
+
     addWidget(layerBox);
+
     connect(layerBox, QOverload<int>::of(&LayerComboBox::layerChanged), this, &MainToolbar::layerComboBoxChanged);
     addWidget(imageSizeLabel);
 
+    stepSpinBox->setMinimum(Pyramid::minimumStep);
+    stepSpinBox->setMaximum(Pyramid::maximumStep);
+    stepSpinBox->setSingleStep(0.1);
+    addWidget(new QLabel("Pyramid step: "));
+    addWidget(stepSpinBox);
+
+    QPushButton *updateStepButton = new QPushButton("update step");
+    connect(updateStepButton, &QPushButton::clicked, this, &MainToolbar::updateStepClicked);
+    addWidget(updateStepButton);
 }
 
 void MainToolbar::updateForPyramid(Pyramid &pyramid)
 {
     imageSizeLabel->setImageSize(pyramid.getOriginSize());
+    stepSpinBox->setValue(pyramid.getPyramidStep());
     layerBox->update(pyramid);
 }
 
@@ -34,6 +49,11 @@ void MainToolbar::layerComboBoxChanged(int index)
 void MainToolbar::imageComboBoxChanged(const ImageItem &imageItem)
 {
     emit imageChanged(imageItem);
+}
+
+void MainToolbar::updateStepClicked()
+{
+    emit pyramidStepChanged(stepSpinBox->value());
 }
 
 

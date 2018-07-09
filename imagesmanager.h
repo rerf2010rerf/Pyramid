@@ -28,6 +28,7 @@ public:
     ImageItem openNewImage(const QString &fileName);
     Pyramid &changeActivePyramid(const ImageItem &imageItem);
     Pyramid &getActivePyramid();
+    Pyramid &changeActivePyramidStep(double newStep);
 
 
 private:
